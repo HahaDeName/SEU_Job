@@ -1,0 +1,37 @@
+-- 东南大学招聘信息系统 - 数据库初始化脚本
+
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS seu_job DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE seu_job;
+
+-- 创建招聘信息表
+CREATE TABLE IF NOT EXISTS jobs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(200) NOT NULL COMMENT '招聘标题',
+    company VARCHAR(100) NOT NULL DEFAULT '' COMMENT '公司名称',
+    summary VARCHAR(500) NOT NULL DEFAULT '' COMMENT '卡片摘要',
+    content_type ENUM('text', 'image', 'link') NOT NULL DEFAULT 'text' COMMENT '内容类型',
+    content_text TEXT NULL COMMENT '文本内容',
+    content_image VARCHAR(500) NULL COMMENT '图片URL',
+    content_link VARCHAR(500) NULL COMMENT '链接URL（如微信推送）',
+    tags VARCHAR(200) NULL COMMENT '标签，逗号分隔',
+    source VARCHAR(50) NULL COMMENT '来源（如群聊名称）',
+    sender_name VARCHAR(100) NULL COMMENT '发布者姓名',
+    sender_id VARCHAR(50) NULL COMMENT '发布者ID',
+    original_time DATETIME NULL COMMENT '原始发布时间',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE COMMENT '是否上架',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='招聘信息表';
+
+-- 创建管理员表
+CREATE TABLE IF NOT EXISTS admins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE COMMENT '管理员账号',
+    password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='管理员表';
+
+-- 插入默认管理员（密码需要在应用层加密）
+-- INSERT INTO admins (username, password_hash) VALUES ('admin', 'hashed_password_here');
