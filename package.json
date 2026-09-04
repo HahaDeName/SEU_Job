@@ -1,0 +1,25 @@
+{
+  "name": "seu-job",
+  "version": "1.0.0",
+  "description": "东南大学招聘信息展示系统",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node server/app.js",
+    "dev": "nodemon server/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "mysql2": "^3.6.5",
+    "ejs": "^3.1.9",
+    "dotenv": "^16.3.1",
+    "bcryptjs": "^2.4.3",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= job.title %> - 东南大学招聘信息</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">东南大学招聘信息</a>
+            <div class="navbar-actions">
+                <% if (isAdmin) { %>
+                    <a href="/admin" class="btn btn-sm btn-primary">管理后台</a>
+                <% } %>
+                <button id="logoutBtn" class="btn btn-sm">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="detail-container">
+        <div class="detail-header">
+            <a href="/" class="btn-back">← 返回列表</a>
+        </div>
+
+        <div class="detail-card">
+            <h1><%= job.title %></h1>
+
+            <div class="detail-meta">
+                <% if (job.company) { %>
+                    <span>🏢 <%= job.company %></span>
+                <% } %>
+                <% if (job.sender_name) { %>
+                    <span>👤 <%= job.sender_name %></span>
+                <% } %>
+                <% if (job.original_time) { %>
+                    <span>📅 <%= new Date(job.original_time).toLocaleString('zh-CN') %></span>
+                <% } %>
+                <% if (job.source) { %>
+                    <span>📱 <%= job.source %></span>
+                <% } %>
+            </div>
+
+            <div class="detail-content">
+                <% if (job.content_text) { %>
+                    <div class="detail-content-text"><%= job.content_text %></div>
+                <% } %>
+
+                <% if (job.content_image) { %>
+                    <div class="detail-content-image">
+                        <img src="<%= job.content_image %>" alt="招聘图片">
+                    </div>
+                <% } %>
+
+                <% if (job.content_link) { %>
+                    <div class="detail-content-link">
+                        <p>相关链接：</p>
+                        <a href="<%= job.content_link %>" target="_blank">点击查看</a>
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (job.tags) { %>
+                <div class="detail-tags">
+                    <% job.tags.split(',').forEach(tag => { %>
+                        <span class="tag"><%= tag.trim() %></span>
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                const res = await fetch('/logout', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.href = '/login';
+                }
+            } catch (err) {
+                console.error('登出失败:', err);
+            }
+        });
+    </script>
+</body>
+</html>

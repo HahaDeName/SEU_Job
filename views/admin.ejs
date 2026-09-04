@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 东南大学招聘信息</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="/" class="navbar-brand">管理后台</a>
+            <div class="navbar-actions">
+                <a href="/" class="btn btn-sm">返回前台</a>
+                <button id="logoutBtn" class="btn btn-sm">退出</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="admin-header">
+            <h2>招聘信息管理</h2>
+            <button id="addBtn" class="btn btn-primary">+ 新增招聘</button>
+        </div>
+
+        <div class="admin-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>标题</th>
+                        <th>公司</th>
+                        <th>内容</th>
+                        <th>状态</th>
+                        <th>发布时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="jobTableBody">
+                    <!-- 数据将通过 JavaScript 动态生成 -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="pagination" class="pagination">
+            <!-- 分页将通过 JavaScript 动态生成 -->
+        </div>
+    </div>
+
+    <!-- 新增/编辑模态框 -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">新增招聘信息</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <form id="jobForm" class="modal-form">
+                <input type="hidden" id="jobId">
+                <div class="form-group">
+                    <label>标题 *</label>
+                    <input type="text" id="formTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>公司名称</label>
+                    <input type="text" id="formCompany">
+                </div>
+                <div class="form-group">
+                    <label>摘要</label>
+                    <input type="text" id="formSummary">
+                </div>
+                <div class="form-group">
+                    <label>📝 文本内容</label>
+                    <textarea id="formText" placeholder="招聘详情文本"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>🖼️ 图片 URL</label>
+                    <input type="text" id="formImage" placeholder="图片链接地址">
+                </div>
+                <div class="form-group">
+                    <label>🔗 链接 URL</label>
+                    <input type="text" id="formLink" placeholder="微信推送链接或其他链接">
+                </div>
+                <div class="form-group">
+                    <label>标签（逗号分隔）</label>
+                    <input type="text" id="formTags" placeholder="如：校招,实习,计算机">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" id="cancelBtn">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/admin.js"></script>
+</body>
+</html>
