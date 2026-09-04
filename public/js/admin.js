@@ -6,6 +6,7 @@ let editingId = null;
 document.addEventListener('DOMContentLoaded', () => {
     loadJobs();
     setupEventListeners();
+    setupImageUpload();
 });
 
 // 设置事件监听
@@ -252,4 +253,79 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// 设置图片上传
+function setupImageUpload() {
+    const fileInput = document.getElementById('imageFile');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const imageInput = document.getElementById('formImage');
+
+    // 文件选择变化时显示预览
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('imagePreview').innerHTML =
+                    `<img src="${e.target.result}" style="max-width:200px;max-height:150px;border-radius:4px;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // 上传按钮
+    uploadBtn.addEventListener('click', uploadImage);
+
+    // URL 输入变化时显示预览
+    imageInput.addEventListener('input', () => {
+        const url = imageInput.value;
+        if (url) {
+            document.getElementById('imagePreview').innerHTML =
+                `<img src="${url}" style="max-width:200px;max-height:150px;border-radius:4px;" onerror="this.style.display='none'">`;
+        } else {
+            document.getElementById('imagePreview').innerHTML = '';
+        }
+    });
+}
+
+// 上传图片
+async function uploadImage() {
+    const fileInput = document.getElementById('imageFile');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert('请先选择文件');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = '上传中...';
+
+    try {
+        const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            document.getElementById('formImage').value = data.url;
+            document.getElementById('imagePreview').innerHTML =
+                `<img src="${data.url}" style="max-width:200px;max-height:150px;border-radius:4px;">`;
+            fileInput.value = '';
+            alert('上传成功！');
+        } else {
+            alert(data.message || '上传失败');
+        }
+    } catch (err) {
+        alert('上传失败：' + err.message);
+    } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = '上传';
+    }
 }

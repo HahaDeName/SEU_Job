@@ -1,7 +1,34 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
 const { pool } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
+
+// 图片上传配置
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/');
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: function (req, file, cb) {
+        const filetypes = /jpeg|jpg|png|gif|webp/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+        cb(new Error('只允许上传图片文件（jpg/png/gif/webp）'));
+    }
+});
 
 // 获取招聘信息列表
 router.get('/jobs', async (req, res) => {
@@ -151,6 +178,28 @@ router.patch('/jobs/:id/toggle', requireAdmin, async (req, res) => {
     } catch (error) {
         console.error('切换失败:', error);
         return res.json({ success: false, message: '切换失败' });
+    }
+});
+
+// 图片上传（管理员）
+router.post('/upload', requireAdmin, upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.json({ success: false, message: '请选择文件' });
+    }
+    res.json({
+        success: true,
+        message: '上传成功',
+        url: '/uploads/' + req.file.filename
+    });
+}, (error, req, res, next) => {
+    if (error instanceof multer.MulterError) {
+        if (error.code === 'LIMIT_FILE_SIZE') {
+            return res.json({ success: false, message: '文件大小不能超过5MB' });
+        }
+        return res.json({ success: false, message: error.message });
+    }
+    if (error) {
+        return res.json({ success: false, message: error.message });
     }
 });
 

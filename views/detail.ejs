@@ -41,7 +41,7 @@
 
             <div class="detail-content">
                 <% if (job.content_text) { %>
-                    <div class="detail-content-text"><%= job.content_text %></div>
+                    <div class="detail-content-text" id="contentText"><%= job.content_text %></div>
                 <% } %>
 
                 <% if (job.content_image) { %>
@@ -52,7 +52,7 @@
 
                 <% if (job.content_link) { %>
                     <div class="detail-content-link">
-                        <p>相关链接：</p>
+                        <p>推送链接：</p>
                         <a href="<%= job.content_link %>" target="_blank">点击查看</a>
                     </div>
                 <% } %>
@@ -80,6 +80,13 @@
                 console.error('登出失败:', err);
             }
         });
+
+        // 将文本中的URL转换为可点击链接
+        const contentText = document.getElementById('contentText');
+        if (contentText) {
+            const urlRegex = /(https?:\/\/[^\s<]+[^.,;:!?\s<])/g;
+            contentText.innerHTML = contentText.innerHTML.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+        }
     </script>
 </body>
 </html>

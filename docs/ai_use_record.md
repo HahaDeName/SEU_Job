@@ -5,6 +5,54 @@
 
 ---
 
+## 2026-09-04 20:00 第十三次对话
+
+**时间：** 2026-09-04 20:00
+
+**用户输入：**
+> 做一下本地的图片上传和正文部分的链接可直接点击
+
+**AI 执行动作：**
+1. 安装 `multer` 依赖用于图片上传
+2. 创建 `public/uploads/` 目录存储上传的图片
+3. 修改 `server/routes/api.js`：
+   - 添加 multer 配置（存储位置、文件名、大小限制、格式过滤）
+   - 添加 `POST /api/upload` 图片上传接口
+4. 修改 `views/admin.ejs`：
+   - 将图片 URL 输入框改为带上传功能的组件
+   - 添加文件选择按钮和上传按钮
+   - 添加图片预览区域
+5. 修改 `public/js/admin.js`：
+   - 添加 `setupImageUpload()` 函数设置上传相关事件监听
+   - 添加 `uploadImage()` 函数处理图片上传
+   - 支持本地预览和上传后预览
+6. 修改 `views/detail.ejs`：
+   - 为文本内容添加 `id="contentText"`
+   - 添加 JavaScript 将文本中的 URL 转换为可点击链接
+7. 修改 `public/css/style.css`：
+   - 添加 `.image-upload-group` 上传组件样式
+   - 添加 `.btn-small` 小按钮样式
+   - 添加 `.detail-content-text a` 可点击链接样式
+8. 更新 `.gitignore`：添加 `public/uploads/` 忽略
+
+**产出文件：**
+- `server/routes/api.js`（更新）
+- `views/admin.ejs`（更新）
+- `views/detail.ejs`（更新）
+- `public/js/admin.js`（更新）
+- `public/css/style.css`（更新）
+- `.gitignore`（更新）
+- `public/uploads/`（目录）
+
+**新增依赖：**
+- multer
+
+**功能说明：**
+- 图片上传：管理员可在编辑表单中选择本地图片上传，支持预览，最大 5MB
+- 链接可点击：详情页正文中的 URL 自动转换为可点击链接，在新窗口打开
+
+---
+
 ## 2026-09-04 18:52 第十二次对话
 
 **时间：** 2026-09-04 18:52
