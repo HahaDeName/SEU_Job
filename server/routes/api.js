@@ -19,6 +19,13 @@ async function exportJobsData() {
         const dataJs = 'const JOBS_DATA = ' + jsonStr + ';';
         fs.writeFileSync(path.join(__dirname, '../../static/js/data.js'), dataJs);
 
+        // 同步 uploads 目录到 static（用于 GitHub Pages 部署）
+        const uploadsSrc = path.join(__dirname, '../../public/uploads');
+        const uploadsDest = path.join(__dirname, '../../static/uploads');
+        if (fs.existsSync(uploadsSrc)) {
+            fs.cpSync(uploadsSrc, uploadsDest, { recursive: true });
+        }
+
         console.log('数据已自动导出');
     } catch (error) {
         console.error('自动导出失败:', error);
