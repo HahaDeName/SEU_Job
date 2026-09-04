@@ -2,8 +2,28 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const { pool } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
+
+// 自动导出数据到 JSON 文件
+async function exportJobsData() {
+    try {
+        const [rows] = await pool.execute('SELECT * FROM jobs WHERE is_active = 1 ORDER BY original_time DESC');
+        const jsonStr = JSON.stringify(rows, null, 2);
+
+        // 导出到 data/jobs.json
+        fs.writeFileSync(path.join(__dirname, '../../data/jobs.json'), jsonStr);
+
+        // 导出到 static/js/data.js
+        const dataJs = 'const JOBS_DATA = ' + jsonStr + ';';
+        fs.writeFileSync(path.join(__dirname, '../../static/js/data.js'), dataJs);
+
+        console.log('数据已自动导出');
+    } catch (error) {
+        console.error('自动导出失败:', error);
+    }
+}
 
 // 图片上传配置
 const storage = multer.diskStorage({
@@ -116,6 +136,7 @@ router.post('/jobs', requireAdmin, async (req, res) => {
             [title, company || '', summary || '', content_text || null, content_image || null, content_link || null, tags || null]
         );
 
+        await exportJobsData();
         return res.json({ success: true, message: '创建成功', data: { id: result.insertId } });
     } catch (error) {
         console.error('创建失败:', error);
@@ -139,6 +160,7 @@ router.put('/jobs/:id', requireAdmin, async (req, res) => {
             return res.json({ success: false, message: '招聘信息不存在' });
         }
 
+        await exportJobsData();
         return res.json({ success: true, message: '更新成功' });
     } catch (error) {
         console.error('更新失败:', error);
@@ -155,6 +177,7 @@ router.delete('/jobs/:id', requireAdmin, async (req, res) => {
             return res.json({ success: false, message: '招聘信息不存在' });
         }
 
+        await exportJobsData();
         return res.json({ success: true, message: '删除成功' });
     } catch (error) {
         console.error('删除失败:', error);
@@ -174,6 +197,7 @@ router.patch('/jobs/:id/toggle', requireAdmin, async (req, res) => {
         const newStatus = !rows[0].is_active;
         await pool.execute('UPDATE jobs SET is_active = ? WHERE id = ?', [newStatus, req.params.id]);
 
+        await exportJobsData();
         return res.json({ success: true, message: '状态已切换', data: { is_active: newStatus } });
     } catch (error) {
         console.error('切换失败:', error);
