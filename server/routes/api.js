@@ -45,7 +45,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
     fileFilter: function (req, file, cb) {
         const filetypes = /jpeg|jpg|png|gif|webp/;
         const mimetype = filetypes.test(file.mimetype);
@@ -138,8 +138,8 @@ router.post('/jobs', requireAdmin, async (req, res) => {
 
     try {
         const [result] = await pool.execute(
-            `INSERT INTO jobs (title, company, summary, content_text, content_image, content_link, tags)
-             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO jobs (title, company, summary, content_text, content_image, content_link, tags, original_time)
+             VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
             [title, company || '', summary || '', content_text || null, content_image || null, content_link || null, tags || null]
         );
 
@@ -225,7 +225,7 @@ router.post('/upload', requireAdmin, upload.single('image'), (req, res) => {
 }, (error, req, res, next) => {
     if (error instanceof multer.MulterError) {
         if (error.code === 'LIMIT_FILE_SIZE') {
-            return res.json({ success: false, message: '文件大小不能超过5MB' });
+            return res.json({ success: false, message: '文件大小不能超过50MB' });
         }
         return res.json({ success: false, message: error.message });
     }
