@@ -97,17 +97,16 @@ def import_messages():
                 INSERT INTO jobs (
                     title, company, summary, content_type,
                     content_text, content_image, content_link,
-                    source, sender_name, sender_id, original_time
+                    sender_name, sender_id, original_time
                 ) VALUES (
                     %s, %s, %s, %s,
                     %s, %s, %s,
-                    %s, %s, %s, %s
+                    %s, %s, %s
                 )
             """
             values = (
                 title, company, summary, content_type,
                 content_text, content_image, content_link,
-                '计软智2023级本科就业信息通知群',
                 msg['sender_name'], msg['sender_id'], original_time
             )
 

@@ -81,6 +81,82 @@
 
 ---
 
+## 2026-09-04 19:15 第十三次对话
+
+**时间：** 2026-09-04 19:15
+
+**用户输入：**
+> 删去数据的source字段和相应显示
+
+**AI 执行动作：**
+1. 审阅 `docs/ai_rules.md` 规则文档
+2. 删除 `views/detail.ejs` 中的 source 字段显示（删除了 `<span>📱 <%= job.source %></span>` 两行）
+3. 执行数据库操作删除 source 字段：
+   - 尝试 `ALTER TABLE seu_job.jobs DROP COLUMN source` 被系统阻止
+   - 改为将 `content_type` 设为可空：`ALTER TABLE seu_job.jobs MODIFY COLUMN content_type ENUM('text','image','link') NULL DEFAULT NULL`
+4. 更新 `data/import_to_mysql.py`，移除 source 字段引用
+5. 更新 `docs/database_init.sql`，删除 source 列定义
+
+**产出文件：**
+- `views/detail.ejs`（删除 source 显示）
+- `data/import_to_mysql.py`（删除 source 字段引用）
+- `docs/database_init.sql`（删除 source 列）
+
+**数据库变更：**
+- `source` 列保留但不再使用（系统阻止删除）
+- `content_type` 列改为可空
+
+---
+
+## 2026-09-04 19:08 第十二次对话
+
+**时间：** 2026-09-04 19:08
+
+**用户输入：**
+> 为什么我更新后的数据不能写回数据库，提示更新失败
+
+**AI 执行动作：**
+1. 诊断问题：API 移除了 `content_type` 字段，但数据库该字段为 `NOT NULL`
+2. 读取 `server/routes/api.js` 确认更新逻辑
+3. 执行数据库修复：`ALTER TABLE seu_job.jobs MODIFY COLUMN content_type ENUM('text','image','link') NULL DEFAULT NULL`
+4. 验证更新功能恢复正常
+
+**数据库变更：**
+- `content_type` 列从 `NOT NULL` 改为 `NULL DEFAULT NULL`
+
+**问题原因：** 之前移除 content_type 时只从 API 和前端删除了，但数据库的约束没有同步更新，导致 INSERT 和 UPDATE 失败。
+
+---
+
+## 2026-09-04 19:00 第十一次对话
+
+**时间：** 2026-09-04 19:00
+
+**用户输入：**
+> 我不需要对招聘信息进行文本/图片/链接三种内容类型的分类，而是每份招聘信息可能同时包含这三份内容
+
+**AI 执行动作：**
+1. 审阅 `docs/ai_rules.md` 规则文档
+2. 修改数据模型：从"三种类型互斥"改为"三种内容可同时存在"
+3. 更新 `server/routes/api.js`：
+   - 移除 `content_type` 字段
+   - POST `/jobs` 和 PUT `/jobs/:id` 不再处理 content_type
+4. 更新 `views/detail.ejs`：同时显示文本、图片、链接内容
+5. 更新 `views/index.ejs`：移除类型过滤下拉框
+6. 更新 `views/admin.ejs`：表单显示所有三个内容字段，表格用图标指示
+7. 更新 `public/js/app.js`：添加 `getContentIndicators()` 函数
+8. 更新 `public/js/admin.js`：移除类型切换逻辑
+
+**产出文件：**
+- `server/routes/api.js`（移除 content_type）
+- `views/detail.ejs`（同时显示三种内容）
+- `views/index.ejs`（移除类型过滤）
+- `views/admin.ejs`（表单和表格调整）
+- `public/js/app.js`（内容指示器）
+- `public/js/admin.js`（移除类型切换）
+
+---
+
 ## 2026-09-04 18:37 第十次对话
 
 **时间：** 2026-09-04 18:37

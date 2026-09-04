@@ -37,9 +37,6 @@
                 <% if (job.original_time) { %>
                     <span>📅 <%= new Date(job.original_time).toLocaleString('zh-CN') %></span>
                 <% } %>
-                <% if (job.source) { %>
-                    <span>📱 <%= job.source %></span>
-                <% } %>
             </div>
 
             <div class="detail-content">
