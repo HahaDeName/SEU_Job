@@ -138,8 +138,8 @@ function showDetail(id) {
         </div>
         <div class="detail-content">
             ${job.content_text ? `<div class="detail-content-text" id="contentText">${escapeHtml(job.content_text)}</div>` : ''}
-            ${job.content_image ? `<div class="detail-content-image"><img src="${fixImagePath(job.content_image)}" alt="招聘图片"></div>` : ''}
-            ${job.content_link ? `<div class="detail-content-link"><p>推送链接：</p><a href="${escapeHtml(job.content_link)}" target="_blank">点击查看</a></div>` : ''}
+            ${isImageUrl(job.content_image) ? `<div class="detail-content-image"><img src="${escapeHtml(fixImagePath(job.content_image))}" alt="招聘图片"></div>` : ''}
+            ${job.content_link || (job.content_image && !isImageUrl(job.content_image)) ? `<div class="detail-content-link"><p>推送链接：</p><a href="${escapeHtml(job.content_link || job.content_image)}" target="_blank" rel="noopener noreferrer">点击查看</a></div>` : ''}
         </div>
         ${job.tags ? `<div class="detail-tags">${job.tags.split(',').map(tag => `<span class="tag">${escapeHtml(tag.trim())}</span>`).join('')}</div>` : ''}
     `;
@@ -179,9 +179,16 @@ function fixImagePath(url) {
     }
     // 本地上传路径：转换为相对路径
     if (url.startsWith('/uploads/')) {
-        return 'uploads/' + url.substring(9);
+        return new URL(url.substring(1), document.baseURI).href;
     }
     return url;
+}
+
+// 文章页面地址不能作为图片加载
+function isImageUrl(url) {
+    if (!url) return false;
+    if (url.startsWith('data:image/')) return true;
+    return /\.(avif|gif|jpe?g|png|webp)(?:[?#].*)?$/i.test(url);
 }
 
 // HTML 转义
